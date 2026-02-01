@@ -1,83 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Key System</title>
-  <style>
-    body {
-      background: #0b0b0b;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .box {
-      background: #151515;
-      padding: 25px;
-      border-radius: 10px;
-      width: 360px;
-      text-align: center;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      background: #0f0f0f;
-      border: 1px solid #333;
-      color: #00ff6a;
-      border-radius: 6px;
-      margin-top: 10px;
-      font-size: 14px;
-      text-align: center;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 10px;
-      width: 100%;
-      border: none;
-      border-radius: 6px;
-      background: #5865F2;
-      color: white;
-      cursor: pointer;
-      font-size: 15px;
-    }
-  </style>
+  <title>Roblox Key System</title>
 </head>
 <body>
-  <div class="box">
-    <h2>🔑 Your Key</h2>
-    <p>Copy this key and paste it in-game.</p>
-
-    <input id="key" readonly>
-    <button onclick="copyKey()">Copy Key</button>
-  </div>
+  <h2>Your Key</h2>
+  <input id="key" readonly>
+  <button onclick="copy()">Copy</button>
 
   <script>
-    function genRandomString(length) {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-      let out = ""
-      for (let i = 0; i < length; i++) {
-        out += chars[Math.floor(Math.random() * chars.length)]
-      }
-      return out
+    function rand(len) {
+      const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+      let o = ""
+      for (let i = 0; i < len; i++) o += c[Math.floor(Math.random() * c.length)]
+      return o
     }
 
-    // ✅ KEY ONLY
-    const keyValue = "Dxv_" + genRandomString(16)
+    const key = "Dxv_" + rand(16)
+    document.getElementById("key").value = key
 
-    document.getElementById("key").value = keyValue
+    // REGISTER KEY (expires in 15 minutes)
+    fetch("https://YOUR-BACKEND.onrender.com/create-key", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        key,
+        source: window.location.origin
+      })
+    })
 
-    function copyKey() {
-      const input = document.getElementById("key")
-      input.select()
-      input.setSelectionRange(0, 99999)
-      document.execCommand("copy")
-      alert("Key copied!")
+    function copy() {
+      navigator.clipboard.writeText(key)
+      alert("Key copied")
     }
   </script>
 </body>
