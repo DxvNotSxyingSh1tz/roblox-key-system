@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Key System</title>
+  <style>
+    body {
+      background: #0b0b0b;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #151515;
+      padding: 25px;
+      border-radius: 10px;
+      width: 360px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      background: #0f0f0f;
+      border: 1px solid #333;
+      color: #0f0;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #5865F2;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>🔑 Your Key</h2>
+    <p>Copy the full URL below and paste it in-game.</p>
+
+    <input id="key" readonly>
+    <button onclick="copyKey()">Copy Key</button>
+  </div>
+
+  <script>
+    function genKey(length = 24) {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+      let out = ""
+      for (let i = 0; i < length; i++) {
+        out += chars[Math.floor(Math.random() * chars.length)]
+      }
+      return out
+    }
+
+    const randomKey = genKey()
+    const fullKey = `${window.location.origin}/?key=${randomKey}`
+
+    document.getElementById("key").value = fullKey
+
+    function copyKey() {
+      const input = document.getElementById("key")
+      input.select()
+      document.execCommand("copy")
+      alert("Key copied!")
+    }
+  </script>
+</body>
+</html>
