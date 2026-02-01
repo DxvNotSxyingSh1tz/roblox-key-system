@@ -1,39 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Roblox Key System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dxv Key Generator</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <h2>Your Key</h2>
-  <input id="key" readonly>
-  <button onclick="copy()">Copy</button>
+<h2>Generate Your Key</h2>
+<button id="generate">Generate Key</button>
+<p id="key"></p>
+<p id="createdAt"></p>
 
-  <script>
-    function rand(len) {
-      const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-      let o = ""
-      for (let i = 0; i < len; i++) o += c[Math.floor(Math.random() * c.length)]
-      return o
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD7vawaiHDDxlPpR6vQY1mnrY9scLoxhn0",
+  authDomain: "rblx-key.firebaseapp.com",
+  databaseURL: "https://rblx-key-default-rtdb.firebaseio.com",
+  projectId: "rblx-key",
+  storageBucket: "rblx-key.firebasestorage.app",
+  messagingSenderId: "457509159681",
+  appId: "1:457509159681:web:7a58443798b3168ad29100",
+  measurementId: "G-X0ZN6J81YX"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const STORAGE_KEY = 'dxv_key';
+
+function generateKey() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let str = '';
+    for (let i = 0; i < 16; i++) str += chars.charAt(Math.floor(Math.random() * chars.length));
+    return 'Dxv_' + str;
+}
+
+function displayKey(key, createdAt) {
+    document.getElementById('key').textContent = "Your Key: " + key;
+    document.getElementById('createdAt').textContent = "Created At: " + new Date(createdAt).toLocaleString();
+    navigator.clipboard.writeText(key).then(() => console.log('Key copied to clipboard'));
+}
+
+// Save key to Firebase safely
+function saveKeyToFirebase(key) {
+    const keyRef = database.ref('keys/' + key);
+    return keyRef.once('value').then(snapshot => {
+        if (!snapshot.exists()) {
+            const createdAt = Date.now();
+            return keyRef.set({ createdAt }).then(() => createdAt);
+        } else {
+            return snapshot.val().createdAt || Date.now();
+        }
+    });
+}
+
+// Get or create persistent key
+function getKey() {
+    let key = localStorage.getItem(STORAGE_KEY);
+    if (!key) {
+        key = generateKey();
+        saveKeyToFirebase(key).then(createdAt => {
+            localStorage.setItem(STORAGE_KEY, key);
+            displayKey(key, createdAt);
+        });
+    } else {
+        saveKeyToFirebase(key).then(createdAt => {
+            displayKey(key, createdAt);
+        });
     }
+}
 
-    const key = "Dxv_" + rand(16)
-    document.getElementById("key").value = key
+// Regenerate button
+document.getElementById('generate').addEventListener('click', () => {
+    const key = generateKey();
+    saveKeyToFirebase(key).then(createdAt => {
+        localStorage.setItem(STORAGE_KEY, key);
+        displayKey(key, createdAt);
+    });
+});
 
-    // REGISTER KEY (expires in 15 minutes)
-    fetch("https://YOUR-BACKEND.onrender.com/create-key", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        key,
-        source: window.location.origin
-      })
-    })
-
-    function copy() {
-      navigator.clipboard.writeText(key)
-      alert("Key copied")
-    }
-  </script>
+window.onload = getKey;
+</script>
 </body>
 </html>
