@@ -21,16 +21,6 @@
       border-radius: 10px;
       width: 360px;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    p {
-      color: #bdbdbd;
-      font-size: 14px;
     }
 
     input {
@@ -41,53 +31,46 @@
       color: #00ff6a;
       border-radius: 6px;
       margin-top: 10px;
-      font-size: 13px;
+      font-size: 14px;
+      text-align: center;
     }
 
     button {
       margin-top: 15px;
-      padding: 10px 16px;
+      padding: 10px;
+      width: 100%;
       border: none;
       border-radius: 6px;
       background: #5865F2;
       color: white;
       cursor: pointer;
       font-size: 15px;
-      width: 100%;
-    }
-
-    button:hover {
-      background: #4752c4;
     }
   </style>
 </head>
 <body>
   <div class="box">
     <h2>🔑 Your Key</h2>
-    <p>Copy the full URL below and paste it in-game.</p>
+    <p>Copy this key and paste it in-game.</p>
 
-    <input id="key" readonly />
+    <input id="key" readonly>
     <button onclick="copyKey()">Copy Key</button>
   </div>
 
   <script>
     function genRandomString(length) {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-      let result = ""
+      let out = ""
       for (let i = 0; i < length; i++) {
-        result += chars[Math.floor(Math.random() * chars.length)]
+        out += chars[Math.floor(Math.random() * chars.length)]
       }
-      return result
+      return out
     }
 
-    // Dxv_ + 16 random characters
+    // ✅ KEY ONLY
     const keyValue = "Dxv_" + genRandomString(16)
 
-    // Full key is the URL + ?key=
-    const fullKey = keyValue
-
-    // Display key
-    document.getElementById("key").value = fullKey
+    document.getElementById("key").value = keyValue
 
     function copyKey() {
       const input = document.getElementById("key")
